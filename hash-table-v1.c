@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/queue.h>
+#include <errno.h>
 
 #include <pthread.h>
 
@@ -94,7 +95,7 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	//START CRITICAL SECTION
 	if(pthread_mutex_lock(&mutex)!=0){
 		hash_table_v1_destroy(hash_table);
-		exit(1);
+		exit(errno);
 	}
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
@@ -112,7 +113,7 @@ void hash_table_v1_add_entry(struct hash_table_v1 *hash_table,
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	if(pthread_mutex_unlock(&mutex)!=0){
 		hash_table_v1_destroy(hash_table);
-		exit(1);
+		exit(errno);
 	}
 	//END CRITICAL SECTION
 }

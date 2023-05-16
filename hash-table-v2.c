@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/queue.h>
+#include <errno.h>
 
 #include <pthread.h>
 
@@ -81,7 +82,7 @@ void hash_table_v2_destroy(struct hash_table_v2 *hash_table)
 			SLIST_REMOVE_HEAD(list_head, pointers);
 			free(list_entry);
 		}
-		pthread_mutex_destroy(&entry->m);
+		if(pthread_mutex_destroy(&entry->m)!=0) exit(errno);
 	}
 	free(hash_table);
 }
@@ -93,7 +94,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	struct hash_table_entry *hash_table_entry = get_hash_table_entry(hash_table, key);
 	if(pthread_mutex_lock(&hash_table_entry->m)!=0){
 		hash_table_v2_destroy(hash_table);
-		exit(1);
+		exit(errno);
 	}
 	struct list_head *list_head = &hash_table_entry->list_head;
 	struct list_entry *list_entry = get_list_entry(hash_table, key, list_head);
@@ -111,7 +112,7 @@ void hash_table_v2_add_entry(struct hash_table_v2 *hash_table,
 	SLIST_INSERT_HEAD(list_head, list_entry, pointers);
 	if(pthread_mutex_unlock(&hash_table_entry->m)!=0){
 		hash_table_v2_destroy(hash_table);
-		exit(1);
+		exit(errno);
 	}
 }
 
