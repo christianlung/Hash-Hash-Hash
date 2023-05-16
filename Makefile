@@ -20,6 +20,9 @@ all: hash-table-tester
 hash-table-tester: $(OBJS)
 	$(CC) $(LDFLAGS) $^ -o $@
 
+tar:
+	@tar -cf 005731615.tar hash-table-base.c hash-table-base.h hash-table-common.c hash-table-common.h hash-table-tester.c hash-table-v1.c hash-table-v1.h hash-table-v2.c hash-table-v2.h README.md test_lab3.py
+
 .PHONY: clean
 clean:
 	rm -f $(OBJS) hash-table-tester
